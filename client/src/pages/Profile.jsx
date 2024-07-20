@@ -12,8 +12,12 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteFailure,
+  deleteUserSuccess,
+  deleteUserStart,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { deleteUser } from "firebase/auth";
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -81,6 +85,23 @@ export default function Profile() {
       dispatch(updateUserFailure(error.message));
     }
   };
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -130,9 +151,9 @@ export default function Profile() {
         <input
           type="password"
           placeholder="password"
+          onChange={handleChange}
           id="password"
           className="border p-3 rounded-lg"
-          onChange={handleChange}
         />
         <button
           disabled={loading}
@@ -142,10 +163,15 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span
+          onClick={handleDeleteUser}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete Account
+        </span>
         <span className="text-red-700 cursor-pointer">Sign out</span>
       </div>
-      <p className="text-red-700 mt-5">{error ? error : ""}</p>
+      {/* <p className="text-red-700 mt-5">{error ? error : ""}</p> */}
       <p className="text-green-700 mt-5">
         {updateSuccess ? "User is updated successfully!" : ""}
       </p>
