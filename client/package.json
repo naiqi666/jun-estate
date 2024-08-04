@@ -19,7 +19,7 @@
     "react-router-dom": "^6.15.0",
     "redux-persist": "^6.0.0",
     "siper": "^2.0.0",
-    "swiper": "^11.1.8"
+    "swiper": "^11.1.9"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
